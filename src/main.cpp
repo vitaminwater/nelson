@@ -9,7 +9,6 @@
 #define PIN_SERVO_OUT           0
 
 WebSocketsServer webSocket = WebSocketsServer(80);
-StaticJsonBuffer<1024> jsonBuffer;
 Servo servo;
 
 void webSocket_OnEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length)
@@ -17,9 +16,13 @@ void webSocket_OnEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t len
   Serial.printf("WS Evt %d\n", type);
   if(type == WStype_TEXT)
   {
+    Serial.println((char *)payload);
+    StaticJsonBuffer<1024> jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(payload);
-    if(!json.success())
+    if(!json.success()) {
+      Serial.println("lol");
       return;
+    }
 
     if(json.containsKey("action") && json["action"] == "servo_set_pwm" && json.containsKey("pwm"))
     {
